@@ -23,17 +23,6 @@
 @implementation RCBaseModel
 
 
-- (NSString *)notificationName
-{
-    if (_notificationName == nil)
-    {
-        _notificationName = kNotification_GenericDataLoadCompletedOrFailed;
-    }
-    
-    return _notificationName;
-}
-
-
 // Implement in your model if you have nested objects.
 //  Do not call [super initWithDictionary:] if you need to implement your own.
 //
@@ -87,9 +76,11 @@
         NSLog(@"WARNING: your model didn't receive the hash (NSDictionary) it was expecting."); // I'd replace this with your logging system (if applicable)
     }
     
-    [[NSNotificationCenter defaultCenter] postNotificationName:[self notificationName]
-                                                        object:self
-                                                      userInfo:nil];
+    
+    if (![self.completionBlock isEqual:[NSNull null]])
+    {
+        ((void (^)())self.completionBlock)();
+    }
 }
 
 
@@ -99,9 +90,10 @@
     
     [self setConnectionSuccessful:NO];
     
-    [[NSNotificationCenter defaultCenter] postNotificationName:[self notificationName]
-                                                        object:self
-                                                      userInfo:nil];
+    if (![self.completionBlock isEqual:[NSNull null]])
+    {
+        ((void (^)())self.completionBlock)();
+    }
 }
 
 

@@ -29,7 +29,7 @@
 - (BOOL)isPerson;
 
 - (void)requestFacebookUserFromURLRequestString:(NSString *)urlRequestString
-                completionNotificationNameOrNil:(NSString *)notificationName;
+                            withCompletionBlock:(void (^)())completionBlock;
 
 
 @end

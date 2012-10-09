@@ -19,7 +19,7 @@
 
 
 - (void)requestFacebookUserFromURLRequestString:(NSString *)urlRequestString
-                completionNotificationNameOrNil:(NSString *)notificationName;
+                            withCompletionBlock:(void (^)())completionBlock;
 {
     [self setId:nil];
     [self setFirst_name:nil];
@@ -30,7 +30,7 @@
     [self setCategory:nil];
     
     
-    if (notificationName) [self setNotificationName:notificationName];
+    [self setCompletionBlock:completionBlock];
     
     
     RCWebServicesDataHandler * fbAquirer = [[RCWebServicesDataHandler alloc] init];

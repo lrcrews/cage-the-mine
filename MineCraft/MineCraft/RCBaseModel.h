@@ -17,7 +17,7 @@
 #import "RCWebServicesDataHandler.h"
 
 
-#define kNotification_GenericDataLoadCompletedOrFailed (@"notification_dataLoadCompletedOrFailed")
+typedef void(^CompletionBlock)(void);
 
 
 @interface RCBaseModel : NSObject <RCWebServicesDataHandlerDelegate>
@@ -25,7 +25,7 @@
 
 @property BOOL connectionSuccessful;
 
-@property (nonatomic, copy) NSString * notificationName;    // uses kNotification_GenericDataLoadComplete by default
+@property (nonatomic, copy) CompletionBlock completionBlock;
 
 
 - (id)initWithDictionary:(NSDictionary *)dictionary;

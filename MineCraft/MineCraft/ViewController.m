@@ -63,15 +63,9 @@
     [super viewDidLoad];
     
     
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(updateFBUserDisplay)
-                                                 name:@"FBUserUpdated"
-                                               object:nil];
-	
-    
     displayedUser_ = [[FacebookUser alloc] init];
     [displayedUser_ requestFacebookUserFromURLRequestString:@"https://graph.facebook.com/LRyanCrews"
-                            completionNotificationNameOrNil:@"FBUserUpdated"];
+                                        withCompletionBlock:^{ [self updateFBUserDisplay]; }];
 }
 
 
@@ -85,11 +79,6 @@
 
 - (void)updateFBUserDisplay
 {
-    // A couple negative cases
-    
-    //  connectionSuccessful == NO impies connection wasn't successful...
-    //      ... implies might be an understatement.
-    
     if (![displayedUser_ connectionSuccessful])
     {
         [[self facebookFirstNameOrCompanyName] setText:[NSString stringWithFormat:@"Connection error, that's... odd."]];
@@ -141,7 +130,7 @@
     
     
     [displayedUser_ requestFacebookUserFromURLRequestString:[NSString stringWithFormat:@"https://graph.facebook.com/%@", [self.facebookUserName text]]
-                            completionNotificationNameOrNil:@"FBUserUpdated"];
+                                        withCompletionBlock:^{ [self updateFBUserDisplay]; }];
 }
 
 
