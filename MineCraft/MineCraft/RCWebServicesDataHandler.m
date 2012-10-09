@@ -78,7 +78,7 @@
     
     responseIsJSON_         = responseIsJSON;
     responseIsCacheable_    = responseIsCacheable;
-    urlRequestString_       = urlRequestString;
+    urlRequestString_       = [urlRequestString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     
     
     // Let's reset some stuff

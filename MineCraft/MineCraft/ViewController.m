@@ -64,14 +64,14 @@
     
     
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(updateFBDisplay)
+                                             selector:@selector(updateFBUserDisplay)
                                                  name:@"FBUserUpdated"
                                                object:nil];
 	
     
     displayedUser_ = [[FacebookUser alloc] init];
     [displayedUser_ requestFacebookUserFromURLRequestString:@"https://graph.facebook.com/LRyanCrews"
-                            withCompletionNotificationNamed:@"FBUserUpdated"];
+                            completionNotificationNameOrNil:@"FBUserUpdated"];
 }
 
 
@@ -83,14 +83,29 @@
 }
 
 
-- (void)updateFBDisplay
+- (void)updateFBUserDisplay
 {
+    // A couple negative cases
+    
+    //  connectionSuccessful == NO impies connection wasn't successful...
+    //      ... implies might be an understatement.
+    
+    if (![displayedUser_ connectionSuccessful])
+    {
+        [[self facebookFirstNameOrCompanyName] setText:[NSString stringWithFormat:@"Connection error, that's... odd."]];
+        return;
+    }
+    
+    //  No id implies the user was not found
+    
     if ([displayedUser_ id] == nil)
     {
         [[self facebookFirstNameOrCompanyName] setText:[NSString stringWithFormat:@"\"%@\" not found", [self.facebookUserName text]]];
         return;
     }
     
+    
+    // The Happy Path
     
     if ([displayedUser_ isPerson])
     {
@@ -126,7 +141,7 @@
     
     
     [displayedUser_ requestFacebookUserFromURLRequestString:[NSString stringWithFormat:@"https://graph.facebook.com/%@", [self.facebookUserName text]]
-                            withCompletionNotificationNamed:@"FBUserUpdated"];
+                            completionNotificationNameOrNil:@"FBUserUpdated"];
 }
 
 

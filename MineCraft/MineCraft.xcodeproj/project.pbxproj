@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		ED1A18321623B55700262EEE /* RCBaseModel.m in Sources */ = {isa = PBXBuildFile; fileRef = ED1A18311623B55700262EEE /* RCBaseModel.m */; };
 		ED3B9CE8161B8E8A00C82F47 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED3B9CE7161B8E8A00C82F47 /* UIKit.framework */; };
 		ED3B9CEA161B8E8A00C82F47 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED3B9CE9161B8E8A00C82F47 /* Foundation.framework */; };
 		ED3B9CEC161B8E8A00C82F47 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED3B9CEB161B8E8A00C82F47 /* CoreGraphics.framework */; };
@@ -26,6 +27,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		ED1A18301623B55700262EEE /* RCBaseModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCBaseModel.h; sourceTree = "<group>"; };
+		ED1A18311623B55700262EEE /* RCBaseModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCBaseModel.m; sourceTree = "<group>"; };
 		ED3B9CE3161B8E8900C82F47 /* MineCraft.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MineCraft.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		ED3B9CE7161B8E8A00C82F47 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		ED3B9CE9161B8E8A00C82F47 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -67,6 +70,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		ED1A182F1623B53800262EEE /* Optional Yet Convient Base Model */ = {
+			isa = PBXGroup;
+			children = (
+				ED1A18301623B55700262EEE /* RCBaseModel.h */,
+				ED1A18311623B55700262EEE /* RCBaseModel.m */,
+			);
+			name = "Optional Yet Convient Base Model";
+			sourceTree = "<group>";
+		};
 		ED3B9CD8161B8E8900C82F47 = {
 			isa = PBXGroup;
 			children = (
@@ -135,6 +147,7 @@
 		ED3B9D0E161B902600C82F47 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				ED1A182F1623B53800262EEE /* Optional Yet Convient Base Model */,
 				ED3B9D1A161BC05F00C82F47 /* FacebookUser.h */,
 				ED3B9D1B161BC05F00C82F47 /* FacebookUser.m */,
 			);
@@ -228,6 +241,7 @@
 				ED3B9D15161BA2F300C82F47 /* RCWebServicesRequestCache.m in Sources */,
 				ED3B9D1C161BC05F00C82F47 /* FacebookUser.m in Sources */,
 				ED3B9D1F161BC38300C82F47 /* NSObject+utils.m in Sources */,
+				ED1A18321623B55700262EEE /* RCBaseModel.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -353,6 +367,7 @@
 				ED3B9D0C161B8E8A00C82F47 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

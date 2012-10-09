@@ -1,5 +1,5 @@
 //
-//  RCWebServicesDataHandler.h
+//  RCBaseModel.h
 //  MineCraft
 //
 //  Copyright (c) 2012 Leonard Ryan Crews
@@ -14,42 +14,21 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "RCWebServicesDataHandler.h"
 
 
-@protocol RCWebServicesDataHandlerDelegate;
+#define kNotification_GenericDataLoadCompletedOrFailed (@"notification_dataLoadCompletedOrFailed")
 
 
-@interface RCWebServicesDataHandler : NSObject <NSURLConnectionDelegate>
+@interface RCBaseModel : NSObject <RCWebServicesDataHandlerDelegate>
 
 
-@property (nonatomic, assign) id <RCWebServicesDataHandlerDelegate> delegate;
+@property BOOL connectionSuccessful;
+
+@property (nonatomic, copy) NSString * notificationName;    // uses kNotification_GenericDataLoadComplete by default
 
 
-- (void)requestDataForURLRequestString:(NSString *)urlRequestString;
-
-- (void)requestDataForURLRequestString:(NSString *)urlRequestString
-                        jsonIsExpected:(BOOL)responseIsJSON
-                   responseIsCacheable:(BOOL)responseIsCacheable;
-
-
-@end
-
-
-
-// *  ` (#)* '   ,
-//  .   *     ~
-// (>-_-)>  <(^-^)>
-//------------------
-
-// The delegate methods.
-
-@protocol RCWebServicesDataHandlerDelegate <NSObject>
-
-
-- (void)handler:(RCWebServicesDataHandler *)handler
-     loadedData:(id)data;
-
-- (void)dataFailedToLoadFromHandler:(RCWebServicesDataHandler *)handler;
+- (id)initWithDictionary:(NSDictionary *)dictionary;
 
 
 @end

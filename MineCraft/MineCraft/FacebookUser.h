@@ -7,10 +7,10 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "RCWebServicesDataHandler.h"
+#import "RCBaseModel.h"
 
 
-@interface FacebookUser : NSObject <RCWebServicesDataHandlerDelegate>
+@interface FacebookUser : RCBaseModel
 
 
 @property (nonatomic, retain) NSString * id;
@@ -27,10 +27,9 @@
 
 
 - (BOOL)isPerson;
-- (id)initWithDictionary:(NSDictionary *)dictionary;
 
 - (void)requestFacebookUserFromURLRequestString:(NSString *)urlRequestString
-                withCompletionNotificationNamed:(NSString *)notificationName;
+                completionNotificationNameOrNil:(NSString *)notificationName;
 
 
 @end

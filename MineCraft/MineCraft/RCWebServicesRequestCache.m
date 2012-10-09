@@ -19,7 +19,8 @@
 #define kDataLifeInMinutes      (10)
 #define kMaxResponsesToHold     (10)
 
-#define kRequestTimestampKey    [NSString stringWithFormat:@"%@__TIMESTAMP", requestURLString]
+#define kTimeStampFormat        (@"%@__TIMESTAMP")
+#define kRequestTimestampKey    [NSString stringWithFormat:@"%@%@", requestURLString, kTimeStampFormat]
 
 
 #pragma mark -
@@ -85,9 +86,9 @@
     {
         for (int i = kMaxResponsesToHold; i < [_lruQueue count]; i++)
         {
-            NSLog(@"Removing cached data for request \"%@\", it has not been used recently enough.", requestURLString);
-            [_responseData removeObjectForKey:requestURLString];
-            [_responseData removeObjectForKey:kRequestTimestampKey];
+            NSLog(@"Removing cached data for request \"%@\", it has not been used recently enough.", _lruQueue[i]);
+            [_responseData removeObjectForKey:_lruQueue[i]];
+            [_responseData removeObjectForKey:[NSString stringWithFormat:@"%@%@", _lruQueue[i], kTimeStampFormat]];
         }
         
         [_lruQueue removeObjectsAtIndexes:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(kMaxResponsesToHold, [_lruQueue count] - kMaxResponsesToHold)]];
