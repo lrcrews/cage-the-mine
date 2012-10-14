@@ -51,6 +51,9 @@
 @property (nonatomic, retain) IBOutlet UILabel * facebookGenderOrCategory;
 
 
+@property (nonatomic, retain) FacebookUser * fbUserForConsoleLoggedExample;
+
+
 @end
 
 
@@ -77,6 +80,10 @@
     // Log a different kind of web service call example (... too lazt to have more UI)
     
     [self whatDoWeHaveHere];
+    
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 10 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+        NSLog(@"UNLESS YOU INTERNET IS SLOW, DATA IS:: User of id \"%@\", named \"%@\"", [self.fbUserForConsoleLoggedExample id], [self.fbUserForConsoleLoggedExample name]);
+    });
 }
 
 
@@ -200,8 +207,8 @@
                                   if ([results count] > 0)
                                   {
                                       NSDictionary * post = results[0];
-                                      FacebookUser * user = [[FacebookUser alloc] initWithDictionary:post[@"from"]];
-                                      NSLog(@"User of id \"%@\", named \"%@\"", [user id], [user name]);
+                                      _fbUserForConsoleLoggedExample = [[FacebookUser alloc] initWithDictionary:post[@"from"]];
+                                      NSLog(@"User of id \"%@\", named \"%@\"", [self.fbUserForConsoleLoggedExample id], [self.fbUserForConsoleLoggedExample name]);
                                   }
                                   else
                                   {
@@ -212,6 +219,14 @@
                             
                                 NSLog(@"Well... this is, unexpected.  The error?  It's %@", data[@"error"]);
                             }];
+    
+    
+    // The block is unlikely to have populated this property yet, hence the data is null here,
+    // and, it's logged before the data in the block.  
+    
+    NSLog(@"SHOULD BE NULL DATA:: User of id \"%@\", named \"%@\"", [self.fbUserForConsoleLoggedExample id], [self.fbUserForConsoleLoggedExample name]);
+    
+    
     
     
     // And you could nest them too, which I'm not going to show (lazy, slightly drunk), but
