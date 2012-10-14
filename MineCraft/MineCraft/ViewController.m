@@ -79,12 +79,6 @@
 
 - (void)updateFBUserDisplay
 {
-    if (![displayedUser_ connectionSuccessful])
-    {
-        [[self facebookFirstNameOrCompanyName] setText:[NSString stringWithFormat:@"Connection error, that's... odd."]];
-        return;
-    }
-    
     //  No id implies the user was not found
     
     if ([displayedUser_ id] == nil)

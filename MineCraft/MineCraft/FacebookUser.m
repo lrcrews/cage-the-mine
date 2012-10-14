@@ -30,13 +30,15 @@
     [self setCategory:nil];
     
     
-    [self setCompletionBlock:completionBlock];
-    
-    
     RCWebServicesDataHandler * fbAquirer = [[RCWebServicesDataHandler alloc] init];
-    
-    [fbAquirer setDelegate:self];
-    [fbAquirer requestDataForURLRequestString:urlRequestString];
+    [fbAquirer requestDataForURLRequestString:urlRequestString
+                          responseIsCacheable:YES
+                    successfulCompletionBlock:^(id data){
+                        
+                        [self setValuesForKeysWithHash:data];
+                        ((void (^)())completionBlock)();
+                    }
+                  unsuccessfulCompletionBlock:nil];
 }
 
 

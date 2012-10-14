@@ -15,8 +15,6 @@
 
 #import "RCBaseModel.h"
 
-#import "NSObject+utils.h"
-
 
 // Of course you could put all this in each of your models, but that wouldn't be very DRY.
 
@@ -59,14 +57,8 @@
 }
 
 
-#pragma mark -
-#pragma mark RCWebServicesDataHandlerDelegate methods
-
-- (void)handler:(RCWebServicesDataHandler *)handler
-     loadedData:(id)data;
+- (void)setValuesForKeysWithHash:(id)data;
 {
-    [self setConnectionSuccessful:YES];
-    
     if ([data respondsToSelector:@selector(objectForKey:)])
     {
         [self setMyValuesForKeysWithDictionary:data];
@@ -74,25 +66,6 @@
     else
     {
         NSLog(@"WARNING: your model didn't receive the hash (NSDictionary) it was expecting."); // I'd replace this with your logging system (if applicable)
-    }
-    
-    
-    if (![self.completionBlock isEqual:[NSNull null]])
-    {
-        ((void (^)())self.completionBlock)();
-    }
-}
-
-
-- (void)dataFailedToLoadFromHandler:(RCWebServicesDataHandler *)handler;
-{
-    NSLog(@"WARNING: data failed to load.  Oh noes!!"); // I'd replace this with your logging system (if applicable)
-    
-    [self setConnectionSuccessful:NO];
-    
-    if (![self.completionBlock isEqual:[NSNull null]])
-    {
-        ((void (^)())self.completionBlock)();
     }
 }
 

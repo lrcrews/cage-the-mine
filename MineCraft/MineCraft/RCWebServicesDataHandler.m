@@ -32,6 +32,9 @@
 @property (nonatomic, retain) NSURLConnection * urlConnection;
 @property (nonatomic, retain) NSMutableData * responseData;
 
+@property (nonatomic, copy) ExecutionBlock connectionSuccessfulBlock;
+@property (nonatomic, copy) ExecutionBlock connectionFailureBlock;
+
 
 @end
 
@@ -41,7 +44,6 @@
 
 @implementation RCWebServicesDataHandler
 {
-    BOOL responseIsJSON_;
     BOOL responseIsCacheable_;
     BOOL requestInProgress_;
     
@@ -62,23 +64,22 @@
 #pragma mark -
 #pragma mark Entry Methods
 
-- (void)requestDataForURLRequestString:(NSString *)urlRequestString;
-{
-    [self requestDataForURLRequestString:urlRequestString
-                          jsonIsExpected:YES
-                     responseIsCacheable:YES];
-}
-
-
 - (void)requestDataForURLRequestString:(NSString *)urlRequestString
-                        jsonIsExpected:(BOOL)responseIsJSON
-                   responseIsCacheable:(BOOL)responseIsCacheable;
+                   responseIsCacheable:(BOOL)responseIsCacheable
+             successfulCompletionBlock:(ExecutionBlock)successBlock
+           unsuccessfulCompletionBlock:(ExecutionBlock)failureBlock;
 {
+    assert(urlRequestString != nil);
+    assert(successBlock != nil);
+    
+    
     // Let's set some stuff
     
-    responseIsJSON_         = responseIsJSON;
     responseIsCacheable_    = responseIsCacheable;
     urlRequestString_       = [urlRequestString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    
+    [self setConnectionSuccessfulBlock:successBlock];
+    [self setConnectionFailureBlock:failureBlock];
     
     
     // Let's reset some stuff
@@ -87,6 +88,8 @@
     {
         [_urlConnection cancel];
     }
+    _urlConnection = nil;
+    
     [_responseData resetBytesInRange:NSMakeRange(0, _responseData.length)];
     
     
@@ -97,18 +100,20 @@
     if (responseData != nil
      && responseIsCacheable_)
     {
-        [_delegate handler:self
-                loadedData:responseData];
+        if ([self connectionSuccessfulBlock] != nil)    // Safety first
+        {
+            ((void (^)(id data))self.connectionSuccessfulBlock)(responseData);
+        }
+        [self setConnectionSuccessfulBlock:nil];
     }
     else
     {
         [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
+        requestInProgress_ = YES;
         
         _urlConnection = [[NSURLConnection alloc] initWithRequest:[self buildUrlRequest]
                                                          delegate:self
                                                  startImmediately:YES];
-        
-        requestInProgress_ = YES;
     }
 }
 
@@ -178,35 +183,26 @@
 - (void)connection:(NSURLConnection *)connection
   didFailWithError:(NSError *)error
 {
-    NSLog(@"CONNECTION FAILED, error is: %@", error);
-    
     [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
-    [_delegate dataFailedToLoadFromHandler:self];
+    
+    if ([self connectionFailureBlock] != nil)
+    {
+        ((void (^)(id data))self.connectionFailureBlock)(@{ @"error" : error });
+    }
+    [self setConnectionSuccessfulBlock:nil];
 }
 
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection
 {
-    NSLog(@"connection did finish loading.");
-    
-    
     [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
     
     
     id responseData = nil;
-    if (responseIsJSON_)
-    {
-        responseData = [NSJSONSerialization JSONObjectWithData:[self responseData]
-                                                       options:kNilOptions
-                                                         error:nil];
-    }
-    /*
-     *  else, you use a web service that returns xml?  yaml?  jam?
-     *  (one of those might not be a real acronymn).
-     *
-     *  Well, you should serialize that properly.
-     */
-    NSLog(@"response object is:\n\n%@\n\n", [responseData description]);
+    responseData = [NSJSONSerialization JSONObjectWithData:[self responseData]
+                                                   options:kNilOptions
+                                                     error:nil];
+    NSLog(@"response object is:\n\n%@\n\n", [responseData description]);    // Debugging.
     
     
     if (responseIsCacheable_)
@@ -216,8 +212,11 @@
     }
     
     
-    [_delegate handler:self
-            loadedData:responseData];
+    if ([self connectionSuccessfulBlock] != nil)    // Safety first
+    {
+        ((void (^)(id data))self.connectionSuccessfulBlock)(responseData);
+    }
+    [self setConnectionSuccessfulBlock:nil];
 }
 
 

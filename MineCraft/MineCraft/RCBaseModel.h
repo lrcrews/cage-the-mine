@@ -14,21 +14,19 @@
 //
 
 #import <Foundation/Foundation.h>
+
+#import "NSObject+utils.h"
 #import "RCWebServicesDataHandler.h"
 
 
 typedef void(^CompletionBlock)(void);
 
 
-@interface RCBaseModel : NSObject <RCWebServicesDataHandlerDelegate>
-
-
-@property BOOL connectionSuccessful;
-
-@property (nonatomic, copy) CompletionBlock completionBlock;
+@interface RCBaseModel : NSObject
 
 
 - (id)initWithDictionary:(NSDictionary *)dictionary;
+- (void)setValuesForKeysWithHash:(id)data;
 
 
 @end
