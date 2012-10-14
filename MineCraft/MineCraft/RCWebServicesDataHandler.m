@@ -187,7 +187,7 @@
     
     if ([self connectionFailureBlock] != nil)
     {
-        ((void (^)(id data))self.connectionFailureBlock)(@{ @"error" : error });
+        ((void (^)(id data))self.connectionFailureBlock)(@{ @"error" : error });    // That should be a constant you define somewhere, not a magic string.
     }
     [self setConnectionSuccessfulBlock:nil];
 }
@@ -202,7 +202,7 @@
     responseData = [NSJSONSerialization JSONObjectWithData:[self responseData]
                                                    options:kNilOptions
                                                      error:nil];
-    NSLog(@"response object is:\n\n%@\n\n", [responseData description]);    // Debugging.
+    //NSLog(@"response object is:\n\n%@\n\n", [responseData description]);    // Debugging.
     
     
     if (responseIsCacheable_)

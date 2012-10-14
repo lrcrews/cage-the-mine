@@ -99,11 +99,7 @@
 - (id)responseForKey:(NSString *)requestURLString;
 {
     NSDate * cachedTime = (NSDate *)[_responseData objectForKey:kRequestTimestampKey];
-    if (cachedTime == nil)
-    {
-        NSLog(@"Response not present, returning nil.");
-        return nil;
-    }
+    if (cachedTime == nil) return nil;
     
     
     NSDate * now = [NSDate date];

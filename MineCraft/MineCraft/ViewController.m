@@ -36,6 +36,7 @@
 
 #import "FacebookUser.h"
 
+#import "RCWebServicesDataHandler.h"
 #import "RCWebServicesRequestCache.h"
 
 
@@ -63,9 +64,19 @@
     [super viewDidLoad];
     
     
+    // Initial call for UI
+    
     displayedUser_ = [[FacebookUser alloc] init];
     [displayedUser_ requestFacebookUserFromURLRequestString:@"https://graph.facebook.com/LRyanCrews"
-                                        withCompletionBlock:^{ [self updateFBUserDisplay]; }];
+                                        withCompletionBlock:^{
+                                            
+                                            [self updateFBUserDisplay];
+                                        }];
+    
+    
+    // Log a different kind of web service call example (... too lazt to have more UI)
+    
+    [self whatDoWeHaveHere];
 }
 
 
@@ -124,7 +135,89 @@
     
     
     [displayedUser_ requestFacebookUserFromURLRequestString:[NSString stringWithFormat:@"https://graph.facebook.com/%@", [self.facebookUserName text]]
-                                        withCompletionBlock:^{ [self updateFBUserDisplay]; }];
+                                        withCompletionBlock:^{
+                                            
+                                            [self updateFBUserDisplay];
+                                        }];
+}
+
+
+#pragma mark -
+#pragma mark Twain
+
+- (void)whatDoWeHaveHere;
+{
+    //  Of course not all your web service calls will return a hash version of your model.
+    //  Sometimes you expect a result which you must further manipulate or massage.  No
+    //  worries, that's easy too...
+    
+    RCWebServicesDataHandler * indirectDataHandler = [[RCWebServicesDataHandler alloc] init];
+    [indirectDataHandler requestDataForURLRequestString:@"https://graph.facebook.com/search?until=yesterday&q=orange&limit=3"
+                                    responseIsCacheable:NO
+                              successfulCompletionBlock:^(id data){
+                                  
+                                  // You'll know something about your web service, why else
+                                  // would you be calling it?  Sure, what I'm about to do is not
+                                  // ideal, but you get the point.
+                                  
+                                  // Safety Check
+                                  
+                                  if (![data respondsToSelector:@selector(objectForKey:)])
+                                  {
+                                      NSLog(@"Odd, this used to be a dictionary response...");
+                                      return;
+                                  }
+                                  
+                                  
+                                  // Paging Data
+                                  
+                                  NSDictionary * pagingInfo = data[@"paging"];
+                                  if (pagingInfo != nil)
+                                  {
+                                      NSLog(@"PAGING INFO:");
+                                      NSLog(@"URL to next page is \"%@\"", pagingInfo[@"next"]);
+                                      NSLog(@"URL to previous page is \"%@\"", pagingInfo[@"previous"]);
+                                      NSLog(@"\n\n");
+                                  }
+                                  
+                                  
+                                  // Some Captions
+                                  
+                                  NSLog(@"CAPTIONS:");
+                                  
+                                  NSArray * results = data[@"data"];
+                                  for (NSDictionary * fbPostData in results)
+                                  {
+                                      NSLog(@"%@", fbPostData[@"caption"]);
+                                  }
+                                  NSLog(@"\n\n");
+                                  
+                                  
+                                  // FacebookUser Model
+                                  
+                                  NSLog(@"USER DATA:");
+                                  
+                                  if ([results count] > 0)
+                                  {
+                                      NSDictionary * post = results[0];
+                                      FacebookUser * user = [[FacebookUser alloc] initWithDictionary:post[@"from"]];
+                                      NSLog(@"User of id \"%@\", named \"%@\"", [user id], [user name]);
+                                  }
+                                  else
+                                  {
+                                      NSLog(@"No posts?!?!?  Awwww.");
+                                  }
+                              }
+                            unsuccessfulCompletionBlock:^(id data){
+                            
+                                NSLog(@"Well... this is, unexpected.  The error?  It's %@", data[@"error"]);
+                            }];
+    
+    
+    // And you could nest them too, which I'm not going to show (lazy, slightly drunk), but
+    // you've likely nested animation blocks before, so you're good, right?
+    
+    NSLog(@"THIS LOGGING BROUGHT TO YOU BY.... whatDoWeHaveHere, when you want show something, but UI seems like overkill <the method at the bottom of the ViewController.m>");
 }
 
 
