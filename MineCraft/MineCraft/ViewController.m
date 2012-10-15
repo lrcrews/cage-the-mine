@@ -62,6 +62,7 @@
     FacebookUser * displayedUser_;
 }
 
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -222,7 +223,7 @@
     
     
     // The block is unlikely to have populated this property yet, hence the data is null here,
-    // and, it's logged before the data in the block.  
+    // and, it's logged before the data in the block is logged.  
     
     NSLog(@"SHOULD BE NULL DATA:: User of id \"%@\", named \"%@\"", [self.fbUserForConsoleLoggedExample id], [self.fbUserForConsoleLoggedExample name]);
     
