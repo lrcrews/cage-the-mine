@@ -33,6 +33,9 @@ typedef void(^ExecutionBlock)(id data);
 @interface RCWebServicesDataHandler : NSObject <NSURLConnectionDelegate>
 
 
+@property (nonatomic, strong) NSURLCredential * userCredential;
+
+
 //  A request for JSON data from a given web service URL that
 //  utilizes blocks for the on-success & on-failure scenarios
 //  to improve code maintainability.
@@ -52,6 +55,11 @@ typedef void(^ExecutionBlock)(id data);
 //      an unescaped string representing the url of the web service
 //      must be present (enforced by an assertion)
 //
+//  @param urlRequestParameters
+//      NSDictionary *
+//      a hash of the parameters that should be included with the request
+//      may be nil
+//
 //  @param responseIsCacheable
 //      BOOL
 //      denotes whether ot not the response should be cached
@@ -65,9 +73,120 @@ typedef void(^ExecutionBlock)(id data);
 //      may be nil
 //
 - (void)requestDataForURLRequestString:(NSString *)urlRequestString
+                 withRequestParameters:(NSDictionary *)urlRequestParameters
                    responseIsCacheable:(BOOL)responseIsCacheable
              successfulCompletionBlock:(ExecutionBlock)successBlock
            unsuccessfulCompletionBlock:(ExecutionBlock)failureBlock;
+
+
+//  A POST of JSON data from a given web service URL that
+//  utilizes blocks for the on-success & on-failure scenarios
+//  to improve code maintainability.
+//
+//  Executing this method will cancel (if applicable) the
+//  currently in progress request of this instance, display the
+//  Network Activity Indicator, post the given data to the web service,
+//  and execute the given successBlock.
+//
+//  If the request resulted in connection failure the failureBlock
+//  will be executed (if provided).
+//
+//
+//  @param urlPostString
+//      NSString *
+//      an unescaped string representing the url of the web service
+//      must be present (enforced by an assertion)
+//
+//  @param urlPostParameters
+//      NSDictionary *
+//      a hash of the parameters that should be included with the post
+//      may be nil
+//
+//  @param successBlock
+//      void(^)(id data) block object,
+//      must be present (enforced by an assertion)
+//
+//  @param failureBlock
+//      void(^)(id data) block object,
+//      may be nil
+//
+- (void)postDataForURLPostString:(NSString *)urlPostString
+              withPostParameters:(NSDictionary *)urlPostParameters
+       successfulCompletionBlock:(ExecutionBlock)successBlock
+     unsuccessfulCompletionBlock:(ExecutionBlock)failureBlock;
+
+
+//  A PUT of JSON data from a given web service URL that
+//  utilizes blocks for the on-success & on-failure scenarios
+//  to improve code maintainability.
+//
+//  Executing this method will cancel (if applicable) the
+//  currently in progress request of this instance, display the
+//  Network Activity Indicator, post the given data to the web service,
+//  and execute the given successBlock.
+//
+//  If the request resulted in connection failure the failureBlock
+//  will be executed (if provided).
+//
+//
+//  @param urlPutString
+//      NSString *
+//      an unescaped string representing the url of the web service
+//      must be present (enforced by an assertion)
+//
+//  @param urlPutParameters
+//      NSDictionary *
+//      a hash of the parameters that should be included with the put
+//      may be nil
+//
+//  @param successBlock
+//      void(^)(id data) block object,
+//      must be present (enforced by an assertion)
+//
+//  @param failureBlock
+//      void(^)(id data) block object,
+//      may be nil
+//
+- (void)putDataForURLPutString:(NSString *)urlPutString
+             withPutParameters:(NSDictionary *)urlPutParameters
+     successfulCompletionBlock:(ExecutionBlock)successBlock
+   unsuccessfulCompletionBlock:(ExecutionBlock)failureBlock;
+
+
+//  A DELETE from a given web service URL that
+//  utilizes blocks for the on-success & on-failure scenarios
+//  to improve code maintainability.
+//
+//  Executing this method will cancel (if applicable) the
+//  currently in progress request of this instance, display the
+//  Network Activity Indicator, post the given data to the web service,
+//  and execute the given successBlock.
+//
+//  If the request resulted in connection failure the failureBlock
+//  will be executed (if provided).
+//
+//
+//  @param urlDeletetString
+//      NSString *
+//      an unescaped string representing the url of the web service
+//      must be present (enforced by an assertion)
+//
+//  @param successBlock
+//      void(^)(id data) block object,
+//      must be present (enforced by an assertion)
+//
+//  @param failureBlock
+//      void(^)(id data) block object,
+//      may be nil
+//
+- (void)deleteForURLDeleteString:(NSString *)urlDeleteString
+       successfulCompletionBlock:(ExecutionBlock)successBlock
+     unsuccessfulCompletionBlock:(ExecutionBlock)failureBlock;
+
+
+//  Cancels the active download.
+//
+- (void)cancelDownload;
 
 
 @end

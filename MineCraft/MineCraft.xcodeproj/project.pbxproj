@@ -27,6 +27,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		9401B46E16AB338700593DAF /* Constants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Constants.h; sourceTree = "<group>"; };
 		ED1A18301623B55700262EEE /* RCBaseModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCBaseModel.h; sourceTree = "<group>"; };
 		ED1A18311623B55700262EEE /* RCBaseModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCBaseModel.m; sourceTree = "<group>"; };
 		ED3B9CE3161B8E8900C82F47 /* MineCraft.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MineCraft.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -114,6 +115,7 @@
 				ED3B9D0D161B900200C82F47 /* Controllers */,
 				ED3B9CF6161B8E8A00C82F47 /* AppDelegate.h */,
 				ED3B9CF7161B8E8A00C82F47 /* AppDelegate.m */,
+				9401B46E16AB338700593DAF /* Constants.h */,
 				ED3B9CEE161B8E8A00C82F47 /* Supporting Files */,
 			);
 			path = MineCraft;

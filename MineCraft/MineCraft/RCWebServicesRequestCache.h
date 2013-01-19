@@ -19,11 +19,17 @@
 @interface RCWebServicesRequestCache : NSObject
 
 
+@property (strong) NSDate * lastUpdated;
+
+
 + (RCWebServicesRequestCache *)sharedInstance;
 + (void)flushCache; // You may want to flush the cache if you receive a memory warning.
+- (BOOL)refreshNeeded;
 
 - (void)addResponse:(id)receivedObjects
              forKey:(NSString *)requestURLString;
+
+- (void)removeResponseForKey:(NSString *)requestURLString;
 
 - (id)responseForKey:(NSString *)requestURLString;
 

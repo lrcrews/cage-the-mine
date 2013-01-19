@@ -161,6 +161,7 @@
     
     RCWebServicesDataHandler * indirectDataHandler = [[RCWebServicesDataHandler alloc] init];
     [indirectDataHandler requestDataForURLRequestString:@"https://graph.facebook.com/search?until=yesterday&q=orange&limit=3"
+                                  withRequestParameters:nil
                                     responseIsCacheable:NO
                               successfulCompletionBlock:^(id data){
                                   

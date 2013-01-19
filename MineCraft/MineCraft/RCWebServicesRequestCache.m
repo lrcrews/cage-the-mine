@@ -60,6 +60,31 @@
 {
     [[RCWebServicesRequestCache sharedInstance].responseData removeAllObjects];
     [[RCWebServicesRequestCache sharedInstance].lruQueue removeAllObjects];
+    [[RCWebServicesRequestCache sharedInstance] setLastUpdated:nil];
+}
+
+
+- (BOOL)refreshNeeded;
+{
+    if (_lastUpdated != nil)
+    {
+        NSDate * now = [NSDate date];
+        
+        NSDateComponents * minuteComponent = [[NSDateComponents alloc] init];
+        [minuteComponent setMinute:10];
+        
+        NSCalendar * calendar = [NSCalendar currentCalendar];
+        
+        
+        NSDate * testDate = [calendar dateByAddingComponents:minuteComponent
+                                                      toDate:_lastUpdated
+                                                     options:0];
+        
+        return [testDate compare:now] == NSOrderedAscending;
+    }
+    
+    
+    return YES;
 }
 
 
@@ -93,6 +118,15 @@
         
         [_lruQueue removeObjectsAtIndexes:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(kMaxResponsesToHold, [_lruQueue count] - kMaxResponsesToHold)]];
     }
+}
+
+
+- (void)removeResponseForKey:(NSString *)requestURLString;
+{
+    NSLog(@"Removing data associated to key: %@", requestURLString);
+    [_responseData removeObjectForKey:requestURLString];
+    [_responseData removeObjectForKey:kRequestTimestampKey];
+    [_lruQueue removeObject:requestURLString];
 }
 
 

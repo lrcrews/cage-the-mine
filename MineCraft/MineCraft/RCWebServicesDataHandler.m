@@ -16,6 +16,8 @@
 #import "RCWebServicesDataHandler.h"
 #import "RCWebServicesRequestCache.h"
 
+#import "Constants.h"
+
 
 #pragma mark -
 #pragma mark Magical Values You May Want To Alter
@@ -46,8 +48,12 @@
 {
     BOOL responseIsCacheable_;
     BOOL requestInProgress_;
+    BOOL requestIsPostPutOrDelete_;
     
-    NSString * urlRequestString_;
+    NSString * httpMethod_;
+    
+    NSMutableString * urlRequestString_;
+    NSMutableDictionary * postData_;
 }
 
 
@@ -65,6 +71,7 @@
 #pragma mark Entry Methods
 
 - (void)requestDataForURLRequestString:(NSString *)urlRequestString
+                 withRequestParameters:(NSDictionary *)urlRequestParameters
                    responseIsCacheable:(BOOL)responseIsCacheable
              successfulCompletionBlock:(ExecutionBlock)successBlock
            unsuccessfulCompletionBlock:(ExecutionBlock)failureBlock;
@@ -73,10 +80,28 @@
     assert(successBlock != nil);
     
     
+    //DebugLog(@"Raw request string: %@", urlRequestString);    // Debugging.  Intensively.
+    
+    
     // Let's set some stuff
     
-    responseIsCacheable_    = responseIsCacheable;
-    urlRequestString_       = [urlRequestString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    requestIsPostPutOrDelete_ = NO;
+    httpMethod_ = @"GET";
+    responseIsCacheable_ = responseIsCacheable;
+    
+    urlRequestString_ = [[urlRequestString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding] mutableCopy];
+    if (urlRequestParameters != nil)
+    {
+        [urlRequestString_ appendString:@"?"];
+        
+        for (NSString * currentKey in [urlRequestParameters allKeys])
+        {
+            [urlRequestString_ appendFormat:@"%@=%@&", currentKey, [urlRequestParameters objectForKey:currentKey]];
+        }
+        [urlRequestString_ deleteCharactersInRange:NSMakeRange([urlRequestString_ length] - 1, 1)];
+    }
+    DebugLog(@"Parametered request string: %@", urlRequestString_);
+    
     
     [self setConnectionSuccessfulBlock:successBlock];
     [self setConnectionFailureBlock:failureBlock];
@@ -84,13 +109,7 @@
     
     // Let's reset some stuff
     
-    if (requestInProgress_)
-    {
-        [_urlConnection cancel];
-    }
-    _urlConnection = nil;
-    
-    [_responseData resetBytesInRange:NSMakeRange(0, _responseData.length)];
+    [self resetConnection];
     
     
     // Let's see if we have that stuff, or need that stuff
@@ -98,7 +117,7 @@
     id responseData = [[RCWebServicesRequestCache sharedInstance] responseForKey:urlRequestString_];
     
     if (responseData != nil
-     && responseIsCacheable_)
+        && responseIsCacheable_)
     {
         if ([self connectionSuccessfulBlock] != nil)    // Safety first
         {
@@ -118,6 +137,155 @@
 }
 
 
+- (void)postDataForURLPostString:(NSString *)urlPostString
+              withPostParameters:(NSDictionary *)urlPostParameters
+       successfulCompletionBlock:(ExecutionBlock)successBlock
+     unsuccessfulCompletionBlock:(ExecutionBlock)failureBlock;
+{
+    assert(urlPostString != nil);
+    assert(successBlock != nil);
+    
+    
+    DebugLog(@"Post string: %@", urlPostString);
+    
+    
+    // Set up
+    
+    requestIsPostPutOrDelete_ = YES;
+    httpMethod_ = @"POST";
+    responseIsCacheable_ = NO;
+    
+    urlRequestString_ = [[urlPostString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding] mutableCopy];
+    
+    [self setConnectionSuccessfulBlock:successBlock];
+    [self setConnectionFailureBlock:failureBlock];
+    
+    
+    // Set, re
+    
+    [self resetConnection];
+    
+    
+    // Set off
+    
+    if (postData_ == nil)
+    {
+        postData_ = [[NSMutableDictionary alloc] init];
+    }
+    [postData_ addEntriesFromDictionary:urlPostParameters];
+    
+    [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
+    requestInProgress_ = YES;
+    
+    _urlConnection = [[NSURLConnection alloc] initWithRequest:[self buildUrlRequest]
+                                                     delegate:self
+                                             startImmediately:YES];
+}
+
+
+- (void)putDataForURLPutString:(NSString *)urlPutString
+             withPutParameters:(NSDictionary *)urlPutParameters
+     successfulCompletionBlock:(ExecutionBlock)successBlock
+   unsuccessfulCompletionBlock:(ExecutionBlock)failureBlock;
+{
+    assert(urlPutString != nil);
+    assert(successBlock != nil);
+    
+    
+    DebugLog(@"Put string: %@", urlPutString);
+    
+    
+    // We are
+    
+    requestIsPostPutOrDelete_ = YES;
+    httpMethod_ = @"PUT";
+    responseIsCacheable_ = NO;
+    
+    urlRequestString_ = [[urlPutString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding] mutableCopy];
+    
+    [self setConnectionSuccessfulBlock:successBlock];
+    [self setConnectionFailureBlock:failureBlock];
+    
+    
+    // out of
+    
+    [self resetConnection];
+    
+    
+    // wine.
+    
+    if (postData_ == nil)
+    {
+        postData_ = [[NSMutableDictionary alloc] init];
+    }
+    [postData_ addEntriesFromDictionary:urlPutParameters];
+    
+    [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
+    requestInProgress_ = YES;
+    
+    _urlConnection = [[NSURLConnection alloc] initWithRequest:[self buildUrlRequest]
+                                                     delegate:self
+                                             startImmediately:YES];
+}
+
+
+- (void)deleteForURLDeleteString:(NSString *)urlDeleteString
+       successfulCompletionBlock:(ExecutionBlock)successBlock
+     unsuccessfulCompletionBlock:(ExecutionBlock)failureBlock;
+{
+    assert(urlDeleteString != nil);
+    assert(successBlock != nil);
+    
+    
+    DebugLog(@"Delete string: %@", urlDeleteString);
+    
+    
+    // It's ok though
+    
+    requestIsPostPutOrDelete_ = YES;
+    httpMethod_ = @"DELETE";
+    responseIsCacheable_ = NO;
+    
+    urlRequestString_ = [[urlDeleteString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding] mutableCopy];
+    
+    [self setConnectionSuccessfulBlock:successBlock];
+    [self setConnectionFailureBlock:failureBlock];
+    
+    
+    // we still have
+    
+    [self resetConnection];
+    
+    
+    // beer.
+    
+    
+    [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
+    requestInProgress_ = YES;
+    
+    _urlConnection = [[NSURLConnection alloc] initWithRequest:[self buildUrlRequest]
+                                                     delegate:self
+                                             startImmediately:YES];
+}
+
+
+/*
+ *  The kill switch.
+ */
+
+- (void)cancelDownload;
+{
+    [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+    
+    
+    if (requestInProgress_)
+    {
+        [_urlConnection cancel];
+    }
+    requestInProgress_ = NO;
+}
+
+
 #pragma mark -
 #pragma mark Hulk Help Puny Code
 
@@ -126,20 +294,17 @@
     NSMutableURLRequest * request = [[NSMutableURLRequest alloc] init];
     
     [request setTimeoutInterval:kRC_TimeoutInterval];
+    
+    [request setValue:DeviceDetails
+   forHTTPHeaderField:@"User-Agent"];
+    
     [request setURL:[NSURL URLWithString:urlRequestString_]];
     
+    [request setHTTPMethod:httpMethod_];
     
-    /*  There are cases where you may want to post some data too.
-     *
-     *  Well, there's some more plumbing involved, and I like to keep
-     *  this base class simple, but below is the gist to setting up the
-     *  NSURLRequest properly.
-     *
-     
-    if (this_is_a_post)
+    
+    if (requestIsPostPutOrDelete_) // then it's not a request.  =]
     {
-        [request setHTTPMethod:@"POST"];
-        
         [request setValue:@"application/json"
        forHTTPHeaderField:@"content-type"];
         
@@ -147,26 +312,43 @@
        forHTTPHeaderField:@"accept"];
         
         
-        NSError * error = nil;
-        NSData * bodyData = [NSJSONSerialization dataWithJSONObject:your_post_data
-                                                            options:0
-                                                              error:&error];
-        
-        if (error)
+        if (postData_ != nil)
         {
-            [_delegate call_a_post_failed_delegate_method];
-            return nil;
+            NSError * error = nil;
+            NSData * bodyData = [NSJSONSerialization dataWithJSONObject:postData_
+                                                                options:0
+                                                                  error:&error];
+            
+            if (error)
+            {
+                AlwaysLog(@"WARNING: could not create NSData with NSDictionary \"postData_\".");
+                return nil;
+            }
+            
+            [request setHTTPBody:bodyData];
         }
-        
-        
-        [request setHTTPBody:bodyData];
+        else
+        {
+            AlwaysLog(@"WARNING: postData_ is nil, are you cool with that?");
+        }
     }
-     
-     *
-     */
     
     
     return request;
+}
+
+
+- (void)resetConnection;
+{
+    if (requestInProgress_)
+    {
+        [_urlConnection cancel];
+    }
+    _urlConnection = nil;
+    
+    postData_ = nil;
+    
+    [_responseData resetBytesInRange:NSMakeRange(0, _responseData.length)];
 }
 
 
@@ -185,6 +367,8 @@
 {
     [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
     
+    AlwaysLog(@"Connection Error::\n\n%@\n\n", error);
+    
     if ([self connectionFailureBlock] != nil)
     {
         ((void (^)(id data))self.connectionFailureBlock)(@{ @"error" : error });    // That should be a constant you define somewhere, not a magic string.
@@ -202,7 +386,7 @@
     responseData = [NSJSONSerialization JSONObjectWithData:[self responseData]
                                                    options:kNilOptions
                                                      error:nil];
-    //NSLog(@"response object is:\n\n%@\n\n", [responseData description]);    // Debugging.
+    //DebugLog(@"response object is:\n\n%@\n\n", [responseData description]);    // Debugging.  Intensively.
     
     
     if (responseIsCacheable_)
@@ -217,6 +401,27 @@
         ((void (^)(id data))self.connectionSuccessfulBlock)(responseData);
     }
     [self setConnectionSuccessfulBlock:nil];
+}
+
+
+// The Authenication Hook
+//
+-                        (void)connection:(NSURLConnection *)connection
+willSendRequestForAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge
+{
+    if (_userCredential == nil)
+    {
+        AlwaysLog(@"WARNING: No user credentials for auth challenge, will try admin/password just for the fun of it.");
+        
+        _userCredential = [[NSURLCredential alloc] initWithUser:@"admin"
+                                                       password:@"password"
+                                                    persistence:NSURLCredentialPersistenceNone];
+        
+    }
+    
+    DebugLog(@"Credentials exist, using them");
+    [challenge.sender useCredential:_userCredential
+         forAuthenticationChallenge:challenge];
 }
 
 

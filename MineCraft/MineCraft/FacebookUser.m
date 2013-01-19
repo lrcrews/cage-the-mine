@@ -32,9 +32,10 @@
     
     RCWebServicesDataHandler * fbAquirer = [[RCWebServicesDataHandler alloc] init];
     [fbAquirer requestDataForURLRequestString:urlRequestString
+                        withRequestParameters:nil
                           responseIsCacheable:YES
-                    successfulCompletionBlock:^(id data){
-                        
+                    successfulCompletionBlock:^(id data)
+                    {
                         [self setValuesForKeysWithHash:data];
                         ((void (^)())completionBlock)();
                     }
