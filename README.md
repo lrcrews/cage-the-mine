@@ -79,28 +79,32 @@ There's other methods too!  Right?
 Yes there are.  Here are their signatures to give you a quick idea as to what goes into the different calls:
 
 GET
+
 		- (void)requestDataForURLRequestString:(NSString *)urlRequestString
-                 withRequestParameters:(NSDictionary *)urlRequestParameters
-                   responseIsCacheable:(BOOL)responseIsCacheable
-             successfulCompletionBlock:(ExecutionBlock)successBlock
-           unsuccessfulCompletionBlock:(ExecutionBlock)failureBlock;
+                 		 withRequestParameters:(NSDictionary *)urlRequestParameters
+                       responseIsCacheable:(BOOL)responseIsCacheable
+                 successfulCompletionBlock:(ExecutionBlock)successBlock
+               unsuccessfulCompletionBlock:(ExecutionBlock)failureBlock;
 
 POST
+
 		- (void)postDataForURLPostString:(NSString *)urlPostString
-              withPostParameters:(NSDictionary *)urlPostParameters
-       successfulCompletionBlock:(ExecutionBlock)successBlock
-     unsuccessfulCompletionBlock:(ExecutionBlock)failureBlock;
+                  withPostParameters:(NSDictionary *)urlPostParameters
+           successfulCompletionBlock:(ExecutionBlock)successBlock
+         unsuccessfulCompletionBlock:(ExecutionBlock)failureBlock;
 
 PUT
+
 		- (void)putDataForURLPutString:(NSString *)urlPutString
-             withPutParameters:(NSDictionary *)urlPutParameters
-     successfulCompletionBlock:(ExecutionBlock)successBlock
-   unsuccessfulCompletionBlock:(ExecutionBlock)failureBlock;
+                 withPutParameters:(NSDictionary *)urlPutParameters
+         successfulCompletionBlock:(ExecutionBlock)successBlock
+       unsuccessfulCompletionBlock:(ExecutionBlock)failureBlock;
 
 DELETE
+
 		- (void)deleteForURLDeleteString:(NSString *)urlDeleteString
-       successfulCompletionBlock:(ExecutionBlock)successBlock
-     unsuccessfulCompletionBlock:(ExecutionBlock)failureBlock;
+           successfulCompletionBlock:(ExecutionBlock)successBlock
+         unsuccessfulCompletionBlock:(ExecutionBlock)failureBlock;
 
 
 Anything else I should know about?
@@ -108,9 +112,9 @@ Anything else I should know about?
 
 Probably.  I will mention a few things though...
 
-*The service assumes JSON is the response.  It would be easy to alter it to assume some other type, or to allow for several types, but I find I’m always receiving JSON from web services, and therefore decided to keep it simple for the 90%+ cases.
-*If you plan on updating UI in your completion block you may want to ensure you execute that code on the main thread.  Just a heads up as it’s easy to forget that you’re not always on the main thread in this asynchronous world.
-*This example is rather spartan, but imagine the pattern throughout your code base.  I cannot describe the improvement in R&M (and performance, though that was likely due to an issue with the previous code and/or the caching) on a rather large project I work on when I switched the web service calls to this.
+* The service assumes JSON is the response.  It would be easy to alter it to assume some other type, or to allow for several types, but I find I’m always receiving JSON from web services, and therefore decided to keep it simple for the 90%+ cases.
+* If you plan on updating UI in your completion block you may want to ensure you execute that code on the main thread.  Just a heads up as it’s easy to forget that you’re not always on the main thread in this asynchronous world.
+* This example is rather spartan, but imagine the pattern throughout your code base.  I cannot describe the improvement in R&M (and performance, though that was likely due to an issue with the previous code and/or the caching) on a rather large project I work on when I switched the web service calls to this.
 
 I hope you enjoyed reading this schizophrenic README file, and I really hope you find this useful.
 
