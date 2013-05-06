@@ -63,7 +63,8 @@ Then let's ask it to retrieve some data for us
                     }
                   unsuccessfulCompletionBlock:nil];
 
-So that was fun.  We... 
+So that was fun.  We...
+
 1. requested my FB data 
 2. which didn't require any additional parameters 
 3. let it know we're fine with the data being cached
@@ -121,4 +122,4 @@ I hope you enjoyed reading this schizophrenic README file, and I really hope you
 If you find any bugs or issues, or if you make improvements, please let me know so I may incorporate fixes/new code.
 
 Thank,
-~ Ryan =]
+ ~ Ryan =]
