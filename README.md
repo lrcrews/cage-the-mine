@@ -121,5 +121,7 @@ I hope you enjoyed reading this schizophrenic README file, and I really hope you
 
 If you find any bugs or issues, or if you make improvements, please let me know so I may incorporate fixes/new code.
 
-Thank,
- ~ Ryan =]
+
+Thanks,
+
+~ Ryan =]
